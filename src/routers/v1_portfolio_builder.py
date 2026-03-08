@@ -66,7 +66,7 @@ def get_historical_prices(
         )
         raise HTTPException(
             status_code=503,
-            detail="Data warehouse unavailable",
+            detail="Database unavailable",
         ) from exc
 
     # --- Split benchmark from price_matrix ---

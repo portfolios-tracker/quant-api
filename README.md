@@ -22,10 +22,9 @@ uv sync
 Create `.env` file:
 
 ```env
-CLICKHOUSE_HOST=localhost
-CLICKHOUSE_PORT=8123
-CLICKHOUSE_USER=default
-CLICKHOUSE_PASSWORD=
+SUPABASE_URL=http://localhost:54321
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+SUPABASE_DB_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
 ```
 
 ## Development
@@ -53,19 +52,17 @@ docker build -t portfolio-builder-api .
 ```bash
 # Run with default port (8100)
 docker run -p 8100:8100 \
-  -e CLICKHOUSE_HOST=your-clickhouse-host \
-  -e CLICKHOUSE_PORT=8123 \
-  -e CLICKHOUSE_USER=default \
-  -e CLICKHOUSE_PASSWORD=your-password \
+  -e SUPABASE_URL=your-supabase-url \
+  -e SUPABASE_SERVICE_ROLE_KEY=your-service-role-key \
+  -e SUPABASE_DB_URL=your-postgres-connection-string \
   portfolio-builder-api
 
 # Or with custom port (useful for Railway deployment)
 docker run -p 8080:8080 \
   -e PORT=8080 \
-  -e CLICKHOUSE_HOST=your-clickhouse-host \
-  -e CLICKHOUSE_PORT=8123 \
-  -e CLICKHOUSE_USER=default \
-  -e CLICKHOUSE_PASSWORD=your-password \
+  -e SUPABASE_URL=your-supabase-url \
+  -e SUPABASE_SERVICE_ROLE_KEY=your-service-role-key \
+  -e SUPABASE_DB_URL=your-postgres-connection-string \
   portfolio-builder-api
 ```
 
@@ -79,10 +76,9 @@ The service is configured for Railway deployment via `railway.toml`. Railway wil
 
 Required environment variables in Railway:
 
-- `CLICKHOUSE_HOST`
-- `CLICKHOUSE_PORT`
-- `CLICKHOUSE_USER`
-- `CLICKHOUSE_PASSWORD`
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `SUPABASE_DB_URL`
 
 ## Testing
 
@@ -102,5 +98,8 @@ uv run pytest --cov=src tests/
 - **Quantitative Math** (`src/quantitative/`) — Portfolio calculations, backtesting, weight allocation
 - **Models** (`src/models/`) — Pydantic schemas matching `@workspace/shared-types/client`
 - **API** (`src/api/`) — FastAPI routes and endpoints
+- **Market Data Access** (`src/data/`) — Supabase-backed historical series queries for adjusted price inputs
 
 All numeric values use stringified decimals (e.g., `"0.1234"`) to avoid floating-point precision loss.
+
+The service is being standardized on Supabase as the only durable store for both semantic metadata and historical market series. There is no warehouse migration path to manage in this repository because no secondary analytical store has been provisioned.

@@ -265,4 +265,4 @@ class TestDatabaseFailure:
         )
 
         assert resp.status_code == 503
-        assert resp.json()["detail"] == "Data warehouse unavailable"
+        assert resp.json()["detail"] == "Database unavailable"

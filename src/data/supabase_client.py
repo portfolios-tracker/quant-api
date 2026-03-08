@@ -11,7 +11,7 @@ Design decisions:
     connections are cheap and not safe to share across threads without a pool.
   - Decimal values from Postgres are returned as Python Decimal objects; we
     serialise them as strings to avoid float rounding at the JSON boundary.
-  - Uses DATABASE_URL env var for direct Postgres access (set to the Supabase
+  - Uses SUPABASE_DB_URL env var for direct Postgres access (set to the Supabase
     connection-pooler or direct DB URL).
 """
 
@@ -23,7 +23,6 @@ from datetime import date, timedelta
 from typing import Generator
 
 import psycopg2
-import psycopg2.extras
 
 logger = logging.getLogger(__name__)
 
@@ -42,11 +41,11 @@ def get_db_connection() -> Generator:
         def endpoint(conn=Depends(get_db_connection)):
             ...
     """
-    database_url = os.getenv("DATABASE_URL")
+    database_url = os.getenv("SUPABASE_DB_URL")
     if not database_url:
-        raise RuntimeError("DATABASE_URL environment variable is not set")
+        raise RuntimeError("SUPABASE_DB_URL environment variable is not set")
 
-    conn = psycopg2.connect(database_url)
+    conn = psycopg2.connect(database_url, connect_timeout=10)
     try:
         yield conn
     finally:
