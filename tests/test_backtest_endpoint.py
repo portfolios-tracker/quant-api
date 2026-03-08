@@ -16,7 +16,7 @@ from unittest.mock import MagicMock
 import pytest
 from fastapi.testclient import TestClient
 
-from src.data.clickhouse_client import get_clickhouse_client
+from src.data.supabase_client import get_db_connection
 from src.main import app
 
 
@@ -27,13 +27,13 @@ from src.main import app
 
 @pytest.fixture
 def client():
-    """TestClient with the ClickHouse dependency overridden to a no-op mock."""
-    mock_ch_client = MagicMock()
+    """TestClient with the DB dependency overridden to a no-op mock."""
+    mock_db_conn = MagicMock()
 
-    def override_get_clickhouse_client():
-        yield mock_ch_client
+    def override_get_db_connection():
+        yield mock_db_conn
 
-    app.dependency_overrides[get_clickhouse_client] = override_get_clickhouse_client
+    app.dependency_overrides[get_db_connection] = override_get_db_connection
     with TestClient(app) as tc:
         yield tc
     app.dependency_overrides.clear()

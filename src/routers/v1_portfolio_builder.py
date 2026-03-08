@@ -2,9 +2,9 @@ import logging
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 
-from src.data.clickhouse_client import (
+from src.data.supabase_client import (
     fetch_adjusted_prices,
-    get_clickhouse_client,
+    get_db_connection,
     period_to_dates,
 )
 from src.models.pydantic_schemas import (
@@ -41,13 +41,13 @@ def health_check():
 )
 def get_historical_prices(
     body: HistoricalPriceRequest,
-    client=Depends(get_clickhouse_client),
+    conn=Depends(get_db_connection),
 ) -> HistoricalPriceResponse:
     """
     POST /api/v1/portfolio-builder/historical-prices
 
-    Fetches adjusted_ohlcv data from ClickHouse and structures it for
-    the backtesting UI.  VNINDEX is always queried as the benchmark.
+    Fetches adjusted_price_daily data from Supabase/Postgres and structures it
+    for the backtesting UI.  VNINDEX is always queried as the benchmark.
     """
     start_date, end_date = period_to_dates(body.period)
 
@@ -55,10 +55,10 @@ def get_historical_prices(
     tickers_to_query = list({_BENCHMARK_TICKER} | set(body.tickers))
 
     try:
-        raw = fetch_adjusted_prices(tickers_to_query, start_date, end_date, client)
+        raw = fetch_adjusted_prices(tickers_to_query, start_date, end_date, conn)
     except Exception as exc:
         logger.error(
-            "ClickHouse unavailable while fetching historical prices "
+            "Database unavailable while fetching historical prices "
             "(tickers=%s, period=%s): %s",
             body.tickers,
             body.period,
@@ -66,7 +66,7 @@ def get_historical_prices(
         )
         raise HTTPException(
             status_code=503,
-            detail="Data warehouse unavailable",
+            detail="Database unavailable",
         ) from exc
 
     # --- Split benchmark from price_matrix ---
