@@ -4,7 +4,7 @@ services/portfolio-builder-api/tests/test_historical_prices.py
 Integration-style tests for POST /api/v1/portfolio-builder/historical-prices (Story 2.2).
 
 Strategy:
-  - Use FastAPI TestClient + app.dependency_overrides to skip real ClickHouse.
+  - Use FastAPI TestClient + app.dependency_overrides to skip real DB connection.
   - Patch src.routers.v1_portfolio_builder.fetch_adjusted_prices to control return data.
   - Patch src.routers.v1_portfolio_builder.period_to_dates to return deterministic dates.
   - No network connections; no data-pipeline infrastructure required.
@@ -18,7 +18,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from src.main import app
-from src.data.clickhouse_client import get_clickhouse_client
+from src.data.supabase_client import get_db_connection
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -30,13 +30,13 @@ _FIXED_END   = "2024-06-01"
 
 @pytest.fixture
 def client():
-    """TestClient with the ClickHouse dependency overridden to a no-op mock."""
-    mock_ch_client = MagicMock()
+    """TestClient with the DB dependency overridden to a no-op mock."""
+    mock_db_conn = MagicMock()
 
-    def override_get_clickhouse_client():
-        yield mock_ch_client
+    def override_get_db_connection():
+        yield mock_db_conn
 
-    app.dependency_overrides[get_clickhouse_client] = override_get_clickhouse_client
+    app.dependency_overrides[get_db_connection] = override_get_db_connection
     with TestClient(app) as tc:
         yield tc
     app.dependency_overrides.clear()
@@ -239,15 +239,15 @@ class TestMissingTicker:
 
 
 # ---------------------------------------------------------------------------
-# Test 3: ClickHouse unavailable → 503
+# Test 3: Database unavailable → 503
 # ---------------------------------------------------------------------------
 
 
-class TestClickHouseFailure:
-    """When ClickHouse raises any exception, the endpoint must return 503."""
+class TestDatabaseFailure:
+    """When the database raises any exception, the endpoint must return 503."""
 
     @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
-    @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices", side_effect=ConnectionError("ClickHouse down"))
+    @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices", side_effect=ConnectionError("DB down"))
     def test_returns_503_on_connection_error(self, mock_fetch, mock_period, client):
         resp = client.post(
             "/api/v1/portfolio-builder/historical-prices",
