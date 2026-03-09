@@ -56,7 +56,7 @@ class TestLogBacktestAudit:
             thread_id="thread-xyz",
             request_payload={"tickers": ["VNM", "TCB"], "weightingMode": "equal"},
             response_payload={"metrics": {"annualizedReturn": "0.12"}},
-            clickhouse_query_timestamp="2026-03-05T04:00:00Z",
+            market_data_query_timestamp="2026-03-05T04:00:00Z",
             response_timestamp="2026-03-05T04:00:01Z",
             ip_address="127.0.0.1",
         )
@@ -87,9 +87,9 @@ class TestLogBacktestAudit:
         assert parsed_prompt["tickers"] == ["VNM", "TCB"]
         assert parsed_prompt["weightingMode"] == "equal"
 
-        # data_source_metadata includes ClickHouse timestamp and tickers
+        # data_source_metadata includes market-data timestamp and tickers
         metadata = payload["data_source_metadata"]
-        assert metadata["clickhouse_query_timestamp"] == "2026-03-05T04:00:00Z"
+        assert metadata["market_data_query_timestamp"] == "2026-03-05T04:00:00Z"
         assert metadata["tickers"] == ["VNM", "TCB"]
         assert metadata["weighting_mode"] == "equal"
 

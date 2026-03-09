@@ -34,7 +34,7 @@ def log_backtest_audit(
     thread_id: str | None = None,
     request_payload: dict[str, Any],
     response_payload: dict[str, Any],
-    clickhouse_query_timestamp: str | None = None,
+    market_data_query_timestamp: str | None = None,
     response_timestamp: str | None = None,
     ip_address: str | None = None,
 ) -> None:
@@ -56,8 +56,8 @@ def log_backtest_audit(
         Serialisable dict of the backtest request (tickers, weighting, dates, etc.).
     response_payload:
         Serialisable dict of the backtest response (equity curve, metrics, etc.).
-    clickhouse_query_timestamp:
-        ISO 8601 timestamp captured when ClickHouse was queried; falls back to now.
+    market_data_query_timestamp:
+        ISO 8601 timestamp captured when market data was queried; falls back to now.
     response_timestamp:
         ISO 8601 timestamp of when the FastAPI response was generated; falls back to now.
     ip_address:
@@ -84,7 +84,7 @@ def log_backtest_audit(
         "response_timestamp": response_timestamp or now,
         "llm_model_version": "portfolio-builder-api/backtest",
         "data_source_metadata": {
-            "clickhouse_query_timestamp": clickhouse_query_timestamp or now,
+            "market_data_query_timestamp": market_data_query_timestamp or now,
             "tickers": request_payload.get("tickers", []),
             "weighting_mode": request_payload.get("weightingMode"),
         },

@@ -3,8 +3,8 @@ services/portfolio-builder-api/src/data/supabase_client.py
 
 Supabase (Postgres) integration for the portfolio-builder-api service.
 
-Replaces clickhouse_client.py as part of the migration from ClickHouse to
-Supabase/Postgres for all market data storage (see architecture-api.md).
+Canonical Supabase/Postgres integration for market data access
+(see architecture-api.md).
 
 Design decisions:
   - Per-request psycopg2 connection via FastAPI Depends() — psycopg2
