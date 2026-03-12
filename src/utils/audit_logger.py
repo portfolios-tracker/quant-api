@@ -3,9 +3,9 @@ services/portfolio-builder-api/src/utils/audit_logger.py
 
 Story 4.2: AI Audit & Hallucination Logging — Python-side audit logger.
 
-Persists backtest request/response pairs to the Supabase `audit_logs` table
-using the Supabase REST API directly via httpx, without requiring the
-`supabase-py` SDK (which is not yet a project dependency).
+Persists backtest request/response pairs to Supabase via the `audit_logs`
+compatibility view (backed by `ai_feature_audit_logs` table) using the REST
+API directly via httpx, without requiring the `supabase-py` SDK.
 
 All errors are swallowed so audit failures never block user responses.
 """
@@ -39,7 +39,7 @@ def log_backtest_audit(
     ip_address: str | None = None,
 ) -> None:
     """
-    Persist a backtest audit log entry to ``public.audit_logs``.
+    Persist a backtest audit log entry via the ``public.audit_logs`` view.
 
     This function is **fire-and-forget**: it logs errors to the Python logger
     but never raises, so the FastAPI response is never blocked.
