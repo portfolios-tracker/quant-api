@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Copy dependency files
-COPY services/portfolio-builder-api/pyproject.toml services/portfolio-builder-api/uv.lock ./
+COPY pyproject.toml uv.lock ./
 
 # Create virtual environment and install production dependencies
 RUN /root/.local/bin/uv venv && \
@@ -28,7 +28,7 @@ RUN groupadd -r fastapi && useradd -r -g fastapi fastapi
 COPY --from=builder /app/.venv /app/.venv
 
 # Copy application code
-COPY services/portfolio-builder-api/src/ ./src/
+COPY src/ ./src/
 
 # Change ownership to non-root user
 RUN chown -R fastapi:fastapi /app

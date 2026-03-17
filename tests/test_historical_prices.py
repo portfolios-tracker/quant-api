@@ -1,5 +1,5 @@
 """
-services/portfolio-builder-api/tests/test_historical_prices.py
+services/quant-api/tests/test_historical_prices.py
 
 Integration-style tests for POST /api/v1/portfolio-builder/historical-prices (Story 2.2).
 

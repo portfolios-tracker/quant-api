@@ -1,7 +1,7 @@
 """
-services/portfolio-builder-api/src/data/supabase_client.py
+services/quant-api/src/data/supabase_client.py
 
-Supabase (Postgres) integration for the portfolio-builder-api service.
+Supabase (Postgres) integration for the quant-api service.
 
 Canonical Supabase/Postgres integration for market data access
 (see architecture-api.md).

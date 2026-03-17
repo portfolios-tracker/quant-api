@@ -19,7 +19,7 @@ app.add_middleware(
 # Root health check for Railway and Docker
 @app.get("/health")
 async def health_check():
-    return {"status": "healthy", "service": "portfolio-builder-api"}
+    return {"status": "healthy", "service": "quant-api"}
 
 app.include_router(
     v1_portfolio_builder.router,

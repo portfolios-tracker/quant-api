@@ -1,5 +1,5 @@
 """
-services/portfolio-builder-api/tests/test_backtest_math.py
+services/quant-api/tests/test_backtest_math.py
 
 Unit tests for the quantitative backtest math engine (Story 2.3).
 

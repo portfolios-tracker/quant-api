@@ -1,5 +1,5 @@
 def main():
-    print("Hello from portfolio-builder-api!")
+    print("Hello from quant-api!")
 
 
 if __name__ == "__main__":

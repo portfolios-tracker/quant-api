@@ -1,5 +1,5 @@
 [project]
-name = "portfolio-builder-api"
+name = "quant-api"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"

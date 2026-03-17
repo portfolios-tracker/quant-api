@@ -20,5 +20,5 @@ async def test_health_check():
 
     # Check values
     assert data["status"] == "healthy"
-    assert data["serviceName"] == "portfolio-builder-api"
+    assert data["serviceName"] == "quant-api"
     assert data["version"] == "0.1.0"

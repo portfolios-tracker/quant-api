@@ -1,5 +1,5 @@
 """
-services/portfolio-builder-api/tests/test_backtest_endpoint.py
+services/quant-api/tests/test_backtest_endpoint.py
 
 Integration-style tests for POST /api/v1/portfolio-builder/backtest (Story 2.3).
 

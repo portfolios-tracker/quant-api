@@ -13,7 +13,7 @@ Python 3.12+ required. Uses `uv` for dependency management.
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Create virtual environment and install dependencies
-cd services/portfolio-builder-api
+cd services/quant-api
 uv sync
 ```
 
@@ -44,7 +44,7 @@ API available at `http://localhost:8100`
 ### Build Docker Image
 
 ```bash
-docker build -t portfolio-builder-api .
+docker build -t quant-api .
 ```
 
 ### Run Docker Container
@@ -55,7 +55,7 @@ docker run -p 8100:8100 \
   -e SUPABASE_URL=your-supabase-url \
   -e SUPABASE_SERVICE_ROLE_KEY=your-service-role-key \
   -e SUPABASE_DB_URL=your-postgres-connection-string \
-  portfolio-builder-api
+  quant-api
 
 # Or with custom port (useful for Railway deployment)
 docker run -p 8080:8080 \
@@ -63,7 +63,7 @@ docker run -p 8080:8080 \
   -e SUPABASE_URL=your-supabase-url \
   -e SUPABASE_SERVICE_ROLE_KEY=your-service-role-key \
   -e SUPABASE_DB_URL=your-postgres-connection-string \
-  portfolio-builder-api
+  quant-api
 ```
 
 ### Railway Deployment

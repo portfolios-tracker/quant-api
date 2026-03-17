@@ -1,5 +1,5 @@
 """
-services/portfolio-builder-api/tests/test_backtest_audit.py
+services/quant-api/tests/test_backtest_audit.py
 
 Unit tests for src/utils/audit_logger.py (Story 4.2).
 
@@ -78,7 +78,7 @@ class TestLogBacktestAudit:
         assert payload["session_id"] == "session-abc"
         assert payload["thread_id"] == "thread-xyz"
         assert payload["feature_type"] == "backtest"
-        assert payload["llm_model_version"] == "portfolio-builder-api/backtest"
+        assert payload["llm_model_version"] == "quant-api/backtest"
         assert payload["ip_address"] == "127.0.0.1"
         assert payload["response_json"] == {"metrics": {"annualizedReturn": "0.12"}}
 

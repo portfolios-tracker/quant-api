@@ -1,5 +1,5 @@
 {
-  "name": "@workspace/portfolio-builder-api",
+  "name": "@portfolios-tracker/quant-api",
   "version": "0.1.0",
   "private": true,
   "scripts": {

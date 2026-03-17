@@ -1,5 +1,5 @@
 """
-services/portfolio-builder-api/src/utils/audit_logger.py
+services/quant-api/src/utils/audit_logger.py
 
 Story 4.2: AI Audit & Hallucination Logging — Python-side audit logger.
 
@@ -82,7 +82,7 @@ def log_backtest_audit(
         "prompt_timestamp": now,
         "response_json": response_payload,
         "response_timestamp": response_timestamp or now,
-        "llm_model_version": "portfolio-builder-api/backtest",
+        "llm_model_version": "quant-api/backtest",
         "data_source_metadata": {
             "market_data_query_timestamp": market_data_query_timestamp or now,
             "tickers": request_payload.get("tickers", []),
