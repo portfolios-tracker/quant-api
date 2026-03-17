@@ -1,5 +1,5 @@
 """
-services/quant-api/src/utils/audit_logger.py
+quant-api/src/utils/audit_logger.py
 
 Story 4.2: AI Audit & Hallucination Logging — Python-side audit logger.
 

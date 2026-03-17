@@ -1,5 +1,5 @@
 """
-services/quant-api/src/data/supabase_client.py
+quant-api/src/data/supabase_client.py
 
 Supabase (Postgres) integration for the quant-api service.
 

@@ -1,5 +1,5 @@
 """
-services/quant-api/src/quantitative/backtest_math.py
+quant-api/src/quantitative/backtest_math.py
 
 Core quantitative functions for backtesting: alignment, weighting,
 portfolio return calculation, equity curves, and risk metrics.

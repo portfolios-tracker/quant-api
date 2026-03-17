@@ -1,6 +1,20 @@
-# Portfolio Builder API
+# Quant API
 
-FastAPI service for quantitative backtesting and portfolio builder analysis.
+FastAPI service for quantitative backtesting and portfolio analytics.
+
+## Repository Scope
+
+- Owns quantitative endpoints consumed by the core repository.
+- Stores and reads market data/audit data through Supabase.
+- Exposes stable response envelopes for service-to-service integration.
+
+Detailed guides:
+
+- [SETUP.md](./SETUP.md)
+- [DEPLOYMENT.md](./DEPLOYMENT.md)
+- [Integration Guide](./docs/INTEGRATION.md)
+- [API Contract](./docs/API.md)
+- [Architecture](./docs/ARCHITECTURE.md)
 
 ## Setup
 
@@ -13,18 +27,19 @@ Python 3.12+ required. Uses `uv` for dependency management.
 curl -LsSf https://astral.sh/uv/install.sh | sh
 
 # Create virtual environment and install dependencies
-cd services/quant-api
+cd quant-api
 uv sync
 ```
 
 ### Environment Variables
 
-Create `.env` file:
+Copy from `.env.example`:
 
 ```env
 SUPABASE_URL=http://localhost:54321
 SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
 SUPABASE_DB_URL=postgresql://postgres:postgres@127.0.0.1:54322/postgres
+CORS_ORIGINS=http://localhost:3000
 ```
 
 ## Development
@@ -102,4 +117,4 @@ uv run pytest --cov=src tests/
 
 All numeric values use stringified decimals (e.g., `"0.1234"`) to avoid floating-point precision loss.
 
-The service is being standardized on Supabase as the only durable store for both semantic metadata and historical market series. There is no warehouse migration path to manage in this repository because no secondary analytical store has been provisioned.
+The service is standardized on Supabase as the only durable store for both semantic metadata and historical market series.

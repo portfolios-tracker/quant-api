@@ -1,5 +1,5 @@
 """
-services/quant-api/tests/test_backtest_audit.py
+quant-api/tests/test_backtest_audit.py
 
 Unit tests for src/utils/audit_logger.py (Story 4.2).
 
