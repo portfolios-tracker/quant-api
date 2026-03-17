@@ -9,6 +9,7 @@ API directly via httpx, without requiring the `supabase-py` SDK.
 
 All errors are swallowed so audit failures never block user responses.
 """
+
 from __future__ import annotations
 
 import json

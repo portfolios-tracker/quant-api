@@ -69,7 +69,9 @@ class TestEqualWeightedPortfolio:
         assert abs(port_ret.iloc[1] - ((-5 / 110 + 10 / 210) / 2)) < 1e-6
 
     def test_equity_curve_indexed_to_100(self):
-        returns = pd.Series([0.10, -0.05], index=pd.to_datetime(["2024-01-03", "2024-01-04"]))
+        returns = pd.Series(
+            [0.10, -0.05], index=pd.to_datetime(["2024-01-03", "2024-01-04"])
+        )
         curve = calculate_equity_curve(returns)
         assert abs(curve.iloc[0] - 110.0) < 1e-6  # 100 * 1.10
         assert abs(curve.iloc[1] - 104.5) < 1e-6  # 110 * 0.95
@@ -188,7 +190,13 @@ class TestDateAlignment:
 
     def test_different_start_dates(self):
         # A has 5 dates, B has 3 dates (starts later), benchmark has all 5
-        all_dates = ["2024-01-01", "2024-01-02", "2024-01-03", "2024-01-04", "2024-01-05"]
+        all_dates = [
+            "2024-01-01",
+            "2024-01-02",
+            "2024-01-03",
+            "2024-01-04",
+            "2024-01-05",
+        ]
 
         price_matrix = {
             "A": _price_dict(all_dates, ["100", "101", "102", "103", "104"]),
@@ -245,19 +253,25 @@ class TestMarketCapWeighted:
 
     def test_weights_sum_to_one(self):
         scores = {"A": "1000", "B": "3000", "C": "2000"}
-        weights, _ = calculate_weights(["A", "B", "C"], "market_cap", market_cap_scores=scores)
+        weights, _ = calculate_weights(
+            ["A", "B", "C"], "market_cap", market_cap_scores=scores
+        )
         assert abs(sum(weights.values()) - 1.0) < 1e-10
 
     def test_weight_proportions(self):
         scores = {"A": "1000", "B": "3000"}
-        weights, _ = calculate_weights(["A", "B"], "market_cap", market_cap_scores=scores)
+        weights, _ = calculate_weights(
+            ["A", "B"], "market_cap", market_cap_scores=scores
+        )
         # A = 1000 / 4000 = 0.25, B = 3000 / 4000 = 0.75
         assert abs(weights["A"] - 0.25) < 1e-10
         assert abs(weights["B"] - 0.75) < 1e-10
 
     def test_missing_score_defaults_to_zero(self):
         scores = {"A": "2000"}  # B is missing
-        weights, warnings = calculate_weights(["A", "B"], "market_cap", market_cap_scores=scores)
+        weights, warnings = calculate_weights(
+            ["A", "B"], "market_cap", market_cap_scores=scores
+        )
         assert abs(weights["A"] - 1.0) < 1e-10
         assert abs(weights["B"] - 0.0) < 1e-10
         assert len(warnings) > 0
@@ -265,7 +279,9 @@ class TestMarketCapWeighted:
 
     def test_all_zero_scores_fallback_to_equal(self):
         scores = {"A": "0", "B": "0"}
-        weights, warnings = calculate_weights(["A", "B"], "market_cap", market_cap_scores=scores)
+        weights, warnings = calculate_weights(
+            ["A", "B"], "market_cap", market_cap_scores=scores
+        )
         assert abs(weights["A"] - 0.5) < 1e-10
         assert abs(weights["B"] - 0.5) < 1e-10
         assert len(warnings) > 0
@@ -282,7 +298,9 @@ class TestMarketCapWeighted:
         """Test that market-cap values normalize within portfolio universe (AC #5)."""
         # Simulating mixed VN/US tickers with different market-cap scales
         scores = {"VNM": "5000000000", "AAPL": "3000000000000", "TCB": "2000000000"}
-        weights, _ = calculate_weights(["VNM", "AAPL", "TCB"], "market_cap", market_cap_scores=scores)
+        weights, _ = calculate_weights(
+            ["VNM", "AAPL", "TCB"], "market_cap", market_cap_scores=scores
+        )
         # Verify normalization happens in-portfolio (sum = 1.0)
         assert abs(sum(weights.values()) - 1.0) < 1e-10
         # AAPL should dominate due to much larger market cap
@@ -344,7 +362,9 @@ class TestWeightPrecision:
         from src.quantitative.backtest_math import run_backtest
         from decimal import Decimal
 
-        req = self._make_request("conviction", conviction_scores={"TCB": "0.80", "VNM": "0.40"})
+        req = self._make_request(
+            "conviction", conviction_scores={"TCB": "0.80", "VNM": "0.40"}
+        )
         resp = run_backtest(req)
         total = sum(Decimal(w) for w in resp.asset_weights.values())
         assert abs(float(total) - 1.0) <= 0.0001
@@ -366,6 +386,7 @@ class TestWeightPrecision:
         req = self._make_request("equal")
         resp = run_backtest(req)
         assert set(resp.asset_weights.keys()) == {"TCB", "VNM"}
+
     def test_response_includes_warnings_field(self):
         from src.quantitative.backtest_math import run_backtest
 
@@ -395,16 +416,16 @@ class TestToleranceBoundary:
     def test_weight_sum_exactly_at_upper_boundary_passes(self):
         """Sum of 1.0001 should pass (within ±0.0001 tolerance)."""
         from src.quantitative.backtest_math import calculate_weights
-        
+
         # Manually craft weights that sum to 1.0001
         # This tests the boundary condition: abs(1.0001 - 1.0) = 0.0001
         # Should pass since 0.0001 <= 0.0001
         weights = {"A": 0.3334, "B": 0.3334, "C": 0.3333}
         weight_sum = sum(weights.values())
-        
+
         # Verify our test setup
         assert abs(weight_sum - 1.0001) < 1e-10
-        
+
         # This should NOT raise
         assert abs(weight_sum - 1.0) <= 0.0001
 
@@ -412,10 +433,10 @@ class TestToleranceBoundary:
         """Sum of 0.9999 should pass (within ±0.0001 tolerance)."""
         weights = {"A": 0.3333, "B": 0.3333, "C": 0.3333}
         weight_sum = sum(weights.values())
-        
+
         # Verify our test setup
         assert abs(weight_sum - 0.9999) < 1e-10
-        
+
         # This should NOT raise
         assert abs(weight_sum - 1.0) <= 0.0001
 

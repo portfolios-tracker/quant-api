@@ -68,29 +68,39 @@ class TestValidBacktest:
     """A valid request should return 200 with properly shaped camelCase response."""
 
     def test_response_200(self, client):
-        resp = client.post("/api/v1/portfolio-builder/backtest", json=_make_valid_request())
+        resp = client.post(
+            "/api/v1/portfolio-builder/backtest", json=_make_valid_request()
+        )
         assert resp.status_code == 200
 
     def test_response_has_portfolio_curve(self, client):
-        body = client.post("/api/v1/portfolio-builder/backtest", json=_make_valid_request()).json()
+        body = client.post(
+            "/api/v1/portfolio-builder/backtest", json=_make_valid_request()
+        ).json()
         assert "portfolioCurve" in body
         assert "dates" in body["portfolioCurve"]
         assert "values" in body["portfolioCurve"]
 
     def test_response_has_benchmark_curve(self, client):
-        body = client.post("/api/v1/portfolio-builder/backtest", json=_make_valid_request()).json()
+        body = client.post(
+            "/api/v1/portfolio-builder/backtest", json=_make_valid_request()
+        ).json()
         assert "benchmarkCurve" in body
         assert "dates" in body["benchmarkCurve"]
         assert "values" in body["benchmarkCurve"]
 
     def test_response_has_metrics(self, client):
-        body = client.post("/api/v1/portfolio-builder/backtest", json=_make_valid_request()).json()
+        body = client.post(
+            "/api/v1/portfolio-builder/backtest", json=_make_valid_request()
+        ).json()
         assert "metrics" in body
         for key in ("annualizedReturn", "maxDrawdown", "sharpeRatio"):
             assert key in body["metrics"]
 
     def test_response_has_benchmark_metrics(self, client):
-        body = client.post("/api/v1/portfolio-builder/backtest", json=_make_valid_request()).json()
+        body = client.post(
+            "/api/v1/portfolio-builder/backtest", json=_make_valid_request()
+        ).json()
         assert "benchmarkMetrics" in body
         for key in ("annualizedReturn", "maxDrawdown", "sharpeRatio"):
             assert key in body["benchmarkMetrics"]
@@ -110,7 +120,9 @@ class TestValidBacktest:
         assert resp.status_code == 200
 
     def test_response_has_asset_weights(self, client):
-        body = client.post("/api/v1/portfolio-builder/backtest", json=_make_valid_request()).json()
+        body = client.post(
+            "/api/v1/portfolio-builder/backtest", json=_make_valid_request()
+        ).json()
         assert "assetWeights" in body
         for ticker in ("TCB", "VNM"):
             assert ticker in body["assetWeights"]
@@ -142,7 +154,9 @@ class TestStringifiedFloats:
     """All numeric values in the response must be strings, not JSON numbers."""
 
     def test_curve_values_are_strings(self, client):
-        body = client.post("/api/v1/portfolio-builder/backtest", json=_make_valid_request()).json()
+        body = client.post(
+            "/api/v1/portfolio-builder/backtest", json=_make_valid_request()
+        ).json()
         for val in body["portfolioCurve"]["values"]:
             assert isinstance(val, str)
             float(val)  # must be parseable as float
@@ -151,7 +165,9 @@ class TestStringifiedFloats:
             float(val)
 
     def test_metrics_values_are_strings(self, client):
-        body = client.post("/api/v1/portfolio-builder/backtest", json=_make_valid_request()).json()
+        body = client.post(
+            "/api/v1/portfolio-builder/backtest", json=_make_valid_request()
+        ).json()
         for key in ("annualizedReturn", "maxDrawdown", "sharpeRatio"):
             val = body["metrics"][key]
             assert isinstance(val, str)
@@ -161,6 +177,8 @@ class TestStringifiedFloats:
             float(val_b)
 
     def test_curve_dates_are_strings(self, client):
-        body = client.post("/api/v1/portfolio-builder/backtest", json=_make_valid_request()).json()
+        body = client.post(
+            "/api/v1/portfolio-builder/backtest", json=_make_valid_request()
+        ).json()
         for d in body["portfolioCurve"]["dates"]:
             assert isinstance(d, str)

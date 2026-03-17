@@ -25,7 +25,7 @@ from src.data.supabase_client import get_db_connection
 # ---------------------------------------------------------------------------
 
 _FIXED_START = "2023-06-01"
-_FIXED_END   = "2024-06-01"
+_FIXED_END = "2024-06-01"
 
 
 @pytest.fixture
@@ -45,7 +45,7 @@ def client():
 def _make_series(n: int = 3, ticker: str = "XX") -> dict:
     """Helper: generate a fake fetch_adjusted_prices return dict entry."""
     return {
-        "dates":          [f"2024-0{i+1}-01" for i in range(n)],
+        "dates": [f"2024-0{i + 1}-01" for i in range(n)],
         "adjusted_close": [str(10000 + i * 100) for i in range(n)],
     }
 
@@ -65,13 +65,16 @@ class TestValidRequest:
      - HTTP 200
     """
 
-    @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
+    @patch(
+        "src.routers.v1_portfolio_builder.period_to_dates",
+        return_value=(_FIXED_START, _FIXED_END),
+    )
     @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices")
     def test_response_200(self, mock_fetch, mock_period, client):
         mock_fetch.return_value = {
             "VNINDEX": _make_series(5, "VNINDEX"),
-            "TCB":     _make_series(5, "TCB"),
-            "VNM":     _make_series(5, "VNM"),
+            "TCB": _make_series(5, "TCB"),
+            "VNM": _make_series(5, "VNM"),
         }
 
         resp = client.post(
@@ -81,13 +84,18 @@ class TestValidRequest:
 
         assert resp.status_code == 200
 
-    @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
+    @patch(
+        "src.routers.v1_portfolio_builder.period_to_dates",
+        return_value=(_FIXED_START, _FIXED_END),
+    )
     @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices")
-    def test_price_matrix_contains_requested_tickers(self, mock_fetch, mock_period, client):
+    def test_price_matrix_contains_requested_tickers(
+        self, mock_fetch, mock_period, client
+    ):
         mock_fetch.return_value = {
             "VNINDEX": _make_series(5),
-            "TCB":     _make_series(5),
-            "VNM":     _make_series(5),
+            "TCB": _make_series(5),
+            "VNM": _make_series(5),
         }
 
         resp = client.post(
@@ -98,12 +106,15 @@ class TestValidRequest:
 
         assert set(body["priceMatrix"].keys()) == {"TCB", "VNM"}
 
-    @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
+    @patch(
+        "src.routers.v1_portfolio_builder.period_to_dates",
+        return_value=(_FIXED_START, _FIXED_END),
+    )
     @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices")
     def test_vnindex_not_in_price_matrix(self, mock_fetch, mock_period, client):
         mock_fetch.return_value = {
             "VNINDEX": _make_series(5),
-            "TCB":     _make_series(5),
+            "TCB": _make_series(5),
         }
 
         resp = client.post(
@@ -113,13 +124,16 @@ class TestValidRequest:
 
         assert "VNINDEX" not in resp.json()["priceMatrix"]
 
-    @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
+    @patch(
+        "src.routers.v1_portfolio_builder.period_to_dates",
+        return_value=(_FIXED_START, _FIXED_END),
+    )
     @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices")
     def test_benchmark_populated_from_vnindex(self, mock_fetch, mock_period, client):
         vnindex_series = _make_series(5, "VNINDEX")
         mock_fetch.return_value = {
             "VNINDEX": vnindex_series,
-            "TCB":     _make_series(5),
+            "TCB": _make_series(5),
         }
 
         body = client.post(
@@ -131,12 +145,15 @@ class TestValidRequest:
         assert body["benchmarkDates"] == vnindex_series["dates"]
         assert body["benchmarkClose"] == vnindex_series["adjusted_close"]
 
-    @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
+    @patch(
+        "src.routers.v1_portfolio_builder.period_to_dates",
+        return_value=(_FIXED_START, _FIXED_END),
+    )
     @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices")
     def test_no_warnings_on_full_data(self, mock_fetch, mock_period, client):
         mock_fetch.return_value = {
             "VNINDEX": _make_series(5),
-            "TCB":     _make_series(5),
+            "TCB": _make_series(5),
         }
 
         body = client.post(
@@ -146,13 +163,16 @@ class TestValidRequest:
 
         assert body["warnings"] == []
 
-    @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
+    @patch(
+        "src.routers.v1_portfolio_builder.period_to_dates",
+        return_value=(_FIXED_START, _FIXED_END),
+    )
     @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices")
     def test_price_matrix_series_structure(self, mock_fetch, mock_period, client):
         """Each priceMatrix entry must have 'dates' and 'adjustedClose' arrays."""
         mock_fetch.return_value = {
             "VNINDEX": _make_series(3),
-            "TCB":     _make_series(3),
+            "TCB": _make_series(3),
         }
 
         body = client.post(
@@ -177,13 +197,16 @@ class TestMissingTicker:
     and must be absent from priceMatrix.
     """
 
-    @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
+    @patch(
+        "src.routers.v1_portfolio_builder.period_to_dates",
+        return_value=(_FIXED_START, _FIXED_END),
+    )
     @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices")
     def test_missing_ticker_in_warnings(self, mock_fetch, mock_period, client):
         # BADTICKER absent from fetch result → triggers warning path
         mock_fetch.return_value = {
             "VNINDEX": _make_series(3),
-            "TCB":     _make_series(3),
+            "TCB": _make_series(3),
             # BADTICKER deliberately omitted
         }
 
@@ -194,12 +217,17 @@ class TestMissingTicker:
 
         assert any("BADTICKER" in w for w in body["warnings"])
 
-    @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
+    @patch(
+        "src.routers.v1_portfolio_builder.period_to_dates",
+        return_value=(_FIXED_START, _FIXED_END),
+    )
     @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices")
-    def test_missing_ticker_absent_from_price_matrix(self, mock_fetch, mock_period, client):
+    def test_missing_ticker_absent_from_price_matrix(
+        self, mock_fetch, mock_period, client
+    ):
         mock_fetch.return_value = {
             "VNINDEX": _make_series(3),
-            "TCB":     _make_series(3),
+            "TCB": _make_series(3),
         }
 
         body = client.post(
@@ -209,12 +237,17 @@ class TestMissingTicker:
 
         assert "BADTICKER" not in body["priceMatrix"]
 
-    @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
+    @patch(
+        "src.routers.v1_portfolio_builder.period_to_dates",
+        return_value=(_FIXED_START, _FIXED_END),
+    )
     @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices")
-    def test_known_ticker_still_present_when_other_is_missing(self, mock_fetch, mock_period, client):
+    def test_known_ticker_still_present_when_other_is_missing(
+        self, mock_fetch, mock_period, client
+    ):
         mock_fetch.return_value = {
             "VNINDEX": _make_series(3),
-            "TCB":     _make_series(3),
+            "TCB": _make_series(3),
         }
 
         body = client.post(
@@ -224,7 +257,10 @@ class TestMissingTicker:
 
         assert "TCB" in body["priceMatrix"]
 
-    @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
+    @patch(
+        "src.routers.v1_portfolio_builder.period_to_dates",
+        return_value=(_FIXED_START, _FIXED_END),
+    )
     @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices")
     def test_still_200_even_with_missing_ticker(self, mock_fetch, mock_period, client):
         """Missing ticker is a warning, not an error — HTTP 200 expected."""
@@ -246,8 +282,14 @@ class TestMissingTicker:
 class TestDatabaseFailure:
     """When the database raises any exception, the endpoint must return 503."""
 
-    @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
-    @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices", side_effect=ConnectionError("DB down"))
+    @patch(
+        "src.routers.v1_portfolio_builder.period_to_dates",
+        return_value=(_FIXED_START, _FIXED_END),
+    )
+    @patch(
+        "src.routers.v1_portfolio_builder.fetch_adjusted_prices",
+        side_effect=ConnectionError("DB down"),
+    )
     def test_returns_503_on_connection_error(self, mock_fetch, mock_period, client):
         resp = client.post(
             "/api/v1/portfolio-builder/historical-prices",
@@ -256,9 +298,17 @@ class TestDatabaseFailure:
 
         assert resp.status_code == 503
 
-    @patch("src.routers.v1_portfolio_builder.period_to_dates", return_value=(_FIXED_START, _FIXED_END))
-    @patch("src.routers.v1_portfolio_builder.fetch_adjusted_prices", side_effect=Exception("timeout"))
-    def test_returns_503_detail_on_generic_exception(self, mock_fetch, mock_period, client):
+    @patch(
+        "src.routers.v1_portfolio_builder.period_to_dates",
+        return_value=(_FIXED_START, _FIXED_END),
+    )
+    @patch(
+        "src.routers.v1_portfolio_builder.fetch_adjusted_prices",
+        side_effect=Exception("timeout"),
+    )
+    def test_returns_503_detail_on_generic_exception(
+        self, mock_fetch, mock_period, client
+    ):
         resp = client.post(
             "/api/v1/portfolio-builder/historical-prices",
             json={"tickers": ["TCB"], "period": "1Y"},

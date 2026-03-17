@@ -72,7 +72,9 @@ def period_to_dates(period: str) -> tuple[str, str]:
     (start_iso, end_iso)  e.g. ("2021-06-01", "2024-06-01")
     """
     if period not in _PERIOD_DAYS:
-        raise ValueError(f"Unsupported period '{period}'. Supported: {list(_PERIOD_DAYS)}")
+        raise ValueError(
+            f"Unsupported period '{period}'. Supported: {list(_PERIOD_DAYS)}"
+        )
 
     end = date.today()
     start = end - timedelta(days=_PERIOD_DAYS[period])

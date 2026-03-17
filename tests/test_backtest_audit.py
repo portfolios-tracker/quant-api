@@ -9,6 +9,7 @@ Strategy:
   - Verify error handling when Supabase returns non-2xx status.
   - Verify graceful handling of httpx exceptions.
 """
+
 from __future__ import annotations
 
 import json
@@ -119,7 +120,9 @@ class TestLogBacktestAudit:
             "SUPABASE_SERVICE_ROLE_KEY": "test-service-key",
         },
     )
-    @patch("src.utils.audit_logger.httpx.post", side_effect=Exception("connection refused"))
+    @patch(
+        "src.utils.audit_logger.httpx.post", side_effect=Exception("connection refused")
+    )
     def test_does_not_raise_on_httpx_exception(self, mock_post):
         # Should not raise
         log_backtest_audit(

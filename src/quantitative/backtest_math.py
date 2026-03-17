@@ -73,7 +73,7 @@ def calculate_weights(
     """
     n = len(tickers)
     warnings: list[str] = []
-    
+
     if mode == "equal":
         return {t: 1.0 / n for t in tickers}, warnings
 
@@ -84,7 +84,9 @@ def calculate_weights(
         scores = market_cap_scores
 
     if not scores:
-        warnings.append(f"Missing {mode} scores, falling back to equal-weight allocation")
+        warnings.append(
+            f"Missing {mode} scores, falling back to equal-weight allocation"
+        )
         return {t: 1.0 / n for t in tickers}, warnings
 
     raw: dict[str, float] = {}
@@ -99,13 +101,17 @@ def calculate_weights(
             missing_tickers.append(t)
 
     if missing_tickers:
-        warnings.append(f"Missing or invalid {mode} data for {len(missing_tickers)} ticker(s): {', '.join(missing_tickers[:3])}{'...' if len(missing_tickers) > 3 else ''}")
+        warnings.append(
+            f"Missing or invalid {mode} data for {len(missing_tickers)} ticker(s): {', '.join(missing_tickers[:3])}{'...' if len(missing_tickers) > 3 else ''}"
+        )
 
     total = sum(raw.values())
     if total <= 0:
-        warnings.append(f"All {mode} scores are zero or invalid, falling back to equal-weight allocation")
+        warnings.append(
+            f"All {mode} scores are zero or invalid, falling back to equal-weight allocation"
+        )
         return {t: 1.0 / n for t in tickers}, warnings
-    
+
     return {t: raw[t] / total for t in tickers}, warnings
 
 
@@ -192,7 +198,10 @@ def run_backtest(request: BacktestRequest) -> BacktestResponse:
     )
 
     weights, warnings = calculate_weights(
-        tickers, request.weighting_mode, request.conviction_scores, request.market_cap_scores
+        tickers,
+        request.weighting_mode,
+        request.conviction_scores,
+        request.market_cap_scores,
     )
 
     # Precision guard: weight sum must equal 1.0 within ±0.0001 (AC #3).
@@ -239,7 +248,9 @@ def run_backtest(request: BacktestRequest) -> BacktestResponse:
         ),
         benchmark_curve=EqCurve(
             dates=dates_str,
-            values=[f"{v:.4f}" for v in bench_curve.reindex(port_curve.index).ffill().values],
+            values=[
+                f"{v:.4f}" for v in bench_curve.reindex(port_curve.index).ffill().values
+            ],
         ),
         metrics=RiskMetrics(**port_metrics),
         benchmark_metrics=RiskMetrics(**bench_metrics),
