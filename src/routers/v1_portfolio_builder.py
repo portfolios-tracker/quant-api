@@ -16,7 +16,6 @@ from src.models.pydantic_schemas import (
     TickerSeries,
 )
 from src.quantitative.backtest_math import run_backtest
-from src.utils.audit_logger import log_backtest_audit
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -137,32 +136,5 @@ def post_backtest(body: BacktestRequest, request: Request) -> BacktestResponse:
             detail="Backtest computation failed",
         ) from exc
 
-    # Story 4.2 — Fire-and-forget audit log (non-blocking)
-    user_id = request.headers.get("x-audit-user-id")
-    session_id = request.headers.get("x-audit-session-id") or "unknown"
-    thread_id = request.headers.get("x-audit-thread-id")
-    forwarded_for_header = request.headers.get("x-forwarded-for", "")
-    first_forwarded_ip = forwarded_for_header.split(",")[0].strip() if forwarded_for_header else ""
-    if first_forwarded_ip:
-        ip_address = first_forwarded_ip
-    elif request.client:
-        ip_address = request.client.host
-    else:
-        ip_address = None
-
-    if user_id:
-        tickers = list(body.price_matrix.keys()) if body.price_matrix else []
-        log_backtest_audit(
-            user_id=user_id,
-            session_id=session_id,
-            thread_id=thread_id,
-            request_payload={
-                "tickers": tickers,
-                "weightingMode": body.weighting_mode,
-            },
-            response_payload=result.model_dump(),
-            response_timestamp=None,
-            ip_address=ip_address,
-        )
-
     return result
+
