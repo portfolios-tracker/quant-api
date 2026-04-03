@@ -118,27 +118,27 @@ def fetch_adjusted_prices(
         cur.execute(
             """
             SELECT
-                ticker,
+                asset_id,
                 trading_date::text       AS trading_date,
                 close::text              AS close,
                 volume::text             AS volume
-            FROM market_data.market_data_prices
-            WHERE ticker = ANY(%s)
+            FROM market_data.prices
+            WHERE asset_id = ANY(%s)
               AND trading_date >= %s::date
               AND trading_date <= %s::date
-            ORDER BY ticker, trading_date
+            ORDER BY asset_id, trading_date
             """,
             (tickers, start_date, end_date),
         )
         rows = cur.fetchall()
 
     data: dict[str, dict[str, list]] = {}
-    for ticker_sym, dt_str, close_str, vol_str in rows:
-        if ticker_sym not in data:
-            data[ticker_sym] = {"dates": [], "close": [], "volume": []}
-        data[ticker_sym]["dates"].append(dt_str)
-        data[ticker_sym]["close"].append(close_str)
-        data[ticker_sym]["volume"].append(vol_str)
+    for asset_id, dt_str, close_str, vol_str in rows:
+        if asset_id not in data:
+            data[asset_id] = {"dates": [], "close": [], "volume": []}
+        data[asset_id]["dates"].append(dt_str)
+        data[asset_id]["close"].append(close_str)
+        data[asset_id]["volume"].append(vol_str)
 
     logger.debug(
         "fetch_adjusted_prices: queried %d tickers, got data for %d; range %s..%s",
