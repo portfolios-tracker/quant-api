@@ -69,9 +69,9 @@ def get_historical_prices(
         ) from exc
 
     # --- Split benchmark from price_matrix ---
-    benchmark_data = raw.get(_BENCHMARK_TICKER, {"dates": [], "adjusted_close": []})
+    benchmark_data = raw.get(_BENCHMARK_TICKER, {"dates": [], "close": [], "volume": []})
     benchmark_dates: list[str] = benchmark_data["dates"]
-    benchmark_close: list[str] = benchmark_data["adjusted_close"]
+    benchmark_close: list[str] = benchmark_data["close"]
 
     price_matrix: dict[str, TickerSeries] = {}
     warnings: list[str] = []
@@ -86,7 +86,7 @@ def get_historical_prices(
         td = raw[ticker]
         price_matrix[ticker] = TickerSeries(
             dates=td["dates"],
-            adjusted_close=td["adjusted_close"],
+            adjusted_close=td["close"],
         )
 
     if not benchmark_dates:

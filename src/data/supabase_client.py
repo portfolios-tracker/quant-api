@@ -93,7 +93,7 @@ def fetch_adjusted_prices(
     conn,
 ) -> dict[str, dict[str, list]]:
     """
-    Fetch adjusted prices from ``adjusted_price_daily`` for the given tickers
+    Fetch adjusted prices from ``market_data_prices`` for the given tickers
     and date range.
 
     Parameters
@@ -107,8 +107,8 @@ def fetch_adjusted_prices(
 
     Returns
     -------
-    dict[ticker, {"dates": [...], "adjusted_close": [...]}]
-        Values are plain lists — dates as ``str``, adjusted_close as ``str``
+    dict[ticker, {"dates": [...], "close": [...], "volume": [...]}]
+        Values are plain lists — dates as ``str``, close as ``str``
         (serialised Decimal, no floating-point drift).
     """
     if not tickers:
@@ -120,8 +120,9 @@ def fetch_adjusted_prices(
             SELECT
                 ticker,
                 trading_date::text       AS trading_date,
-                adjusted_close::text     AS adjusted_close
-            FROM public.adjusted_price_daily
+                close::text              AS close,
+                volume::text             AS volume
+            FROM market_data.market_data_prices
             WHERE ticker = ANY(%s)
               AND trading_date >= %s::date
               AND trading_date <= %s::date
@@ -132,11 +133,12 @@ def fetch_adjusted_prices(
         rows = cur.fetchall()
 
     data: dict[str, dict[str, list]] = {}
-    for ticker_sym, dt_str, adj_str in rows:
+    for ticker_sym, dt_str, close_str, vol_str in rows:
         if ticker_sym not in data:
-            data[ticker_sym] = {"dates": [], "adjusted_close": []}
+            data[ticker_sym] = {"dates": [], "close": [], "volume": []}
         data[ticker_sym]["dates"].append(dt_str)
-        data[ticker_sym]["adjusted_close"].append(adj_str)
+        data[ticker_sym]["close"].append(close_str)
+        data[ticker_sym]["volume"].append(vol_str)
 
     logger.debug(
         "fetch_adjusted_prices: queried %d tickers, got data for %d; range %s..%s",
